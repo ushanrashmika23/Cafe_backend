@@ -24,6 +24,16 @@ connection.once("open", () => {
   console.log("MongoDB connection successfull...");
 });
 
+
+
+
+// if "url/user" then redirect to routes/user.js 
+const userRouter=require("./routes/user.js");
+app.use("/user",userRouter);
+
+
+
+
 //listen server
 app.listen(PORT, () => {
   console.log(`Server running on port :${PORT}`);
