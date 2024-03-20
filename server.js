@@ -28,7 +28,7 @@ connection.once("open", () => {
 
 
 // if "url/user" then redirect to routes/user.js 
-const userRouter=require("./routes/user.js");
+const userRouter=require("./routes/userRoute.js");
 app.use("/user",userRouter);
 
 
