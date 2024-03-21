@@ -88,7 +88,7 @@ router.route("/getAll").get((req, res) => {
 //Show specipic user
 router.route("/get/:username").get((req, res) => {
   user
-    .findOne({username:req.params.username})
+    .findOne({ username: req.params.username })
     .then((user) => {
       res.status(400).send({ status: "FetchingSuccess", user: user });
     })
@@ -98,9 +98,25 @@ router.route("/get/:username").get((req, res) => {
 });
 
 //Login
-router.route("/login/:username/:password").post( async (req, res) => {
-  
-  
+router.route("/login").post(async (req, res) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  user
+    .findOne({ username: username })
+    .then((user) => {
+      if (user.password === password) {
+        res
+          .status(200)
+          .send({ status: "LoginSuccess", msg: "Login Success", user: user });
+      } else {
+        res.status(400).send({ status: "LoginError", msg: "Password Error" });
+      }
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .send({ Status: "FetchingErr", msg: "User Not Found", error: err });
+    });
 });
 
 module.exports = router;
