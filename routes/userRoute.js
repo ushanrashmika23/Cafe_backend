@@ -1,17 +1,11 @@
 const express = require("express");
 const multer = require("multer");
+const session = require("express-session");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const user = require("../models/user.model");
-
+const dateTime = require("../functions/dateTime");
 const router = express.Router();
-
-function Now() {
-  const today = new Date();
-  const date = today.toLocaleDateString();
-  const time = today.toLocaleTimeString("en-US", { hour12: false });
-  return { date, time };
-}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -28,8 +22,8 @@ const upload = multer({ storage }).single("propic");
 router.route("/reg").post(upload, (req, res) => {
   const propic = req.file.filename;
   const { username, email, password } = req.body;
-  const time = Now().time;
-  const date = Now().date;
+  const time = dateTime().time;
+  const date = dateTime().date;
   const userData = { username, email, password, propic, date, time };
   const newUser = new user(userData);
 
@@ -47,8 +41,8 @@ router.route("/reg").post(upload, (req, res) => {
 router.route("/update/:id").put(upload, (req, res) => {
   const propic = req.file.filename;
   const { username, email, password } = req.body;
-  const time = Now().time;
-  const date = Now().date;
+  const time = dateTime().time;
+  const date = dateTime().date;
   const newData = { username, email, password, propic, date, time };
 
   const update = user
@@ -105,9 +99,16 @@ router.route("/login").post(async (req, res) => {
     .findOne({ username: username })
     .then((user) => {
       if (user.password === password) {
+        let sessionData = req.session;
+        sessionData.user = user;
         res
           .status(200)
-          .send({ status: "LoginSuccess", msg: "Login Success", user: user });
+          .send({
+            status: "LoginSuccess",
+            msg: "Login Success",
+            user: user,
+            session: sessionData,
+          });
       } else {
         res.status(400).send({ status: "LoginError", msg: "Password Error" });
       }
